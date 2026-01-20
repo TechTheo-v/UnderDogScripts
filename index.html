@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#00ff88">
+    <title>UnderDog Scripts | V8 ULTIMATE DATABASE</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* * ==========================================================================
+         * UNDERDOG V8 - CORE STYLESHEET (1000+ Lines Structure)
+         * Designed for High-End Dashboard Experience
+         * ==========================================================================
+         */
+
+        :root {
+            /* Palette Colors */
+            --color-bg-deep: #050505;
+            --color-bg-panel: #0a0a0c;
+            --color-bg-surface: #111113;
+            --color-bg-input: #161619;
+            
+            --color-primary: #00ff88;
+            --color-primary-dark: #00cc6a;
+            --color-primary-dim: rgba(0, 255, 136, 0.08);
+            --color-primary-glow: rgba(0, 255, 136, 0.4);
+            
+            --color-accent: #7000ff;
+            --color-accent-glow: rgba(112, 0, 255, 0.4);
+
+            --color-text-main: #ffffff;
+            --color-text-muted: #a1a1aa;
+            --color-border: #27272a;
+            
+            /* Typography */
+            --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-head: 'Rajdhani', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+        }
+
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        /* FIX DO SCROLL: overflow hidden no html/body para travar a janela,
+           mas garantindo que o filho role */
+        html, body { 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden; 
+            background-color: var(--color-bg-deep); 
+            color: var(--color-text-main); 
+            font-family: var(--font-ui); 
+            font-size: 16px; 
+            line-height: 1.5; 
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-bg-deep); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; transition: background 0.3s; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+
+        /* Utility Classes */
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .hidden { display: none !important; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
+        .relative { position: relative; }
+
+        /* =========================================
+           1. SECURITY LOCK SCREEN (HWID)
+           ========================================= */
+        #security-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99999;
+            background-color: #000000;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 255, 136, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(112, 0, 255, 0.05) 0px, transparent 50%),
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+
+        .auth-card {
+            width: 100%; max-width: 480px; padding: 40px; background: rgba(10, 10, 12, 0.95);
+            border: 1px solid var(--color-border); border-radius: 24px; text-align: center;
+            box-shadow: 0 25px 80px -12px rgba(0, 0, 0, 0.8); position: relative; overflow: hidden;
+            animation: modalIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .auth-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+        }
+
+        .auth-icon-box {
+            width: 80px; height: 80px; margin: 0 auto 24px;
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(0,0,0,0));
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: 1px solid rgba(0, 255, 136, 0.3); box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);
+        }
+        .auth-icon-box i { font-size: 32px; color: var(--color-primary); }
+
+        .auth-title { font-family: var(--font-head); font-size: 2.2rem; font-weight: 700; color: #fff; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; }
+        .auth-subtitle { color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 32px; }
+
+        .hwid-container {
+            background: #050505; border: 1px dashed var(--color-border); padding: 16px;
+            border-radius: 12px; margin-bottom: 24px; cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .hwid-container:hover { border-color: var(--color-primary); background: rgba(0, 255, 136, 0.02); }
+        .hwid-label { display: block; font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 1px; }
+        .hwid-value { font-family: var(--font-code); color: var(--color-primary); font-size: 1.1rem; letter-spacing: 1px; word-break: break-all; }
+
+        .auth-input-group { position: relative; margin-bottom: 24px; }
+        .auth-input {
+            width: 100%; padding: 18px; background: var(--color-bg-input); border: 1px solid var(--color-border);
+            border-radius: 12px; color: #fff; font-family: var(--font-code); font-size: 1.1rem; text-align: center;
+            text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s;
+        }
+        .auth-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.1); transform: translateY(-2px); }
+
+        .btn-unlock {
+            width: 100%; padding: 18px; background: var(--color-primary); color: #000; border: none;
+            border-radius: 12px; font-family: var(--font-head); font-size: 1.2rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+            position: relative; overflow: hidden;
+        }
+        .btn-unlock:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3); }
+        .btn-unlock:active { transform: translateY(0); }
+
+        .status-message { margin-top: 20px; min-height: 24px; font-size: 0.9rem; font-weight: 500; font-family: var(--font-code); }
+        .text-error { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+        .text-success { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+
+        .buy-link {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px;
+            color: var(--color-text-muted); text-decoration: none; font-size: 0.9rem; padding: 10px 20px;
+            border-radius: 50px; border: 1px solid transparent; transition: 0.3s;
+        }
+        .buy-link:hover { color: #fff; border-color: var(--color-border); background: rgba(255,255,255,0.05); }
+
+        /* =========================================
+           2. MAIN DASHBOARD LAYOUT
+           ========================================= */
+        #app-root { 
+            display: none; 
+            height: 100vh; /* Força altura total da tela */
+            display: grid; 
+            grid-template-columns: 280px 1fr; 
+            opacity: 0; 
+            transition: opacity 1s ease; 
+        }
+        
+        /* Sidebar Styling */
+        .sidebar {
+            background: var(--color-bg-panel); border-right: 1px solid var(--color-border);
+            display: flex; flex-direction: column; padding: 32px 20px; z-index: 50;
+            height: 100%; /* Garante altura total */
+        }
+        .brand-header { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; padding-left: 10px; }
+        .brand-logo { font-size: 28px; color: var(--color-primary); filter: drop-shadow(0 0 8px rgba(0,255,136,0.6)); }
+        .brand-text { font-family: var(--font-head); font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+        
+        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; flex: 1; padding-right: 5px; }
+        .nav-item {
+            padding: 12px 16px; border-radius: 10px; color: var(--color-text-muted); cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px; font-weight: 500;
+            font-size: 0.95rem; border: 1px solid transparent;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); }
+        .nav-item.active { background: rgba(0, 255, 136, 0.08); color: var(--color-primary); border-color: rgba(0, 255, 136, 0.2); }
+        .nav-item i { width: 20px; text-align: center; }
+
+        .user-panel {
+            margin-top: auto; padding-top: 24px; border-top: 1px solid var(--color-border);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .user-avatar {
+            width: 40px; height: 40px; background: linear-gradient(135deg, #222, #000); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff;
+            border: 1px solid var(--color-border); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .user-info h4 { font-size: 0.9rem; color: #fff; font-weight: 600; }
+        .user-tag { font-size: 0.7rem; color: var(--color-primary); background: rgba(0, 255, 136, 0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; }
+
+        /* Main Content Pane */
+        .main-pane { 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative; 
+            background: var(--color-bg-deep); 
+            height: 100vh; /* FIX CRÍTICO: Altura fixa na tela */
+            max-height: 100vh;
+        }
+        
+        .top-navbar {
+            height: 80px; 
+            min-height: 80px; /* Não encolher */
+            border-bottom: 1px solid var(--color-border); 
+            display: flex; 
+            align-items: center;
+            padding: 0 40px; 
+            background: rgba(5, 5, 5, 0.8); 
+            backdrop-filter: blur(12px); 
+            z-index: 40;
+        }
+        .search-wrapper { position: relative; width: 100%; max-width: 500px; }
+        .search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); }
+        .search-input {
+            width: 100%; background: var(--color-bg-surface); border: 1px solid var(--color-border);
+            padding: 12px 16px 12px 48px; border-radius: 12px; color: #fff; font-family: var(--font-ui);
+            font-size: 0.95rem; transition: all 0.3s;
+        }
+        .search-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.05); }
+
+        /* FIX DE ROLAGEM */
+        .content-scroll { 
+            padding: 40px; 
+            padding-bottom: 150px; /* Espaço extra enorme no final */
+            overflow-y: auto; 
+            flex: 1; 
+            scroll-behavior: smooth; 
+            height: 100%;
+        }
+
+        /* Grid View */
+        #view-dashboard { display: block; animation: fadeIn 0.5s ease; }
+        .section-header { margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between; }
+        .section-title { font-family: var(--font-head); font-size: 2.2rem; color: #fff; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .badge-count { background: #222; color: #fff; font-size: 0.9rem; padding: 4px 12px; border-radius: 20px; font-family: var(--font-code); }
+
+        .games-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 24px; 
+            padding-bottom: 100px; /* Margem extra na grid também */
+        }
+        
+        .game-card {
+            background: var(--color-bg-panel); border: 1px solid var(--color-border); border-radius: 16px;
+            overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; display: flex; flex-direction: column; group: card;
+        }
+        .game-card:hover { transform: translateY(-8px); border-color: var(--color-primary); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.6); }
+        .game-card:hover .card-img { transform: scale(1.1); }
+        
+        .card-img-wrap { width: 100%; height: 160px; overflow: hidden; position: relative; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--color-bg-panel) 10%, transparent 80%); }
+        
+        .card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-family: var(--font-head); font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .card-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--color-text-muted); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px; margin-top: 16px; }
+        .status-badge { background: rgba(0, 255, 136, 0.1); color: var(--color-primary); padding: 4px 8px; border-radius: 6px; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.5px; }
+
+        /* Detail View */
+        #view-detail { display: none; max-width: 1000px; margin: 0 auto; animation: slideUp 0.4s ease; padding-bottom: 150px; }
+        .detail-header { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 1px solid var(--color-border); }
+        .btn-back { width: 48px; height: 48px; border-radius: 12px; background: var(--color-bg-surface); border: 1px solid var(--color-border); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .btn-back:hover { background: var(--color-primary); color: #000; border-color: var(--color-primary); }
+        .detail-title { font-family: var(--font-head); font-size: 2.5rem; font-weight: 800; color: #fff; }
+
+        .script-container { background: var(--color-bg-panel); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px; margin-bottom: 24px; transition: 0.3s; position: relative; overflow: hidden; }
+        .script-container:hover { border-color: rgba(0, 255, 136, 0.3); background: #0c0c0e; }
+        
+        .script-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .script-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text-main); display: flex; align-items: center; gap: 12px; }
+        .index-badge { color: var(--color-primary); font-family: var(--font-code); font-size: 0.9rem; opacity: 0.8; background: rgba(0,255,136,0.05); padding: 2px 6px; border-radius: 4px; }
+
+        /* CRITICAL FIX FOR CODE VISIBILITY */
+        .code-block {
+            background: #000000; border: 1px solid #1f1f1f; border-radius: 8px; padding: 16px;
+            font-family: var(--font-code); font-size: 0.85rem; color: #d4d4d8; line-height: 1.6;
+            white-space: pre-wrap !important; word-wrap: break-word !important; word-break: break-all !important;
+            max-height: 300px; overflow-y: auto; user-select: all;
+        }
+
+        .btn-copy {
+            background: var(--color-primary); color: #000; border: none; padding: 8px 20px;
+            border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            display: flex; align-items: center; gap: 8px; transition: 0.2s; font-family: var(--font-ui);
+        }
+        .btn-copy:hover { background: var(--color-primary-dark); transform: scale(1.05); box-shadow: 0 0 15px var(--color-primary-glow); }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed; bottom: 32px; right: 32px; background: #000; border: 1px solid var(--color-primary);
+            border-left: 4px solid var(--color-primary); padding: 16px 24px; border-radius: 8px;
+            display: flex; align-items: center; gap: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            transform: translateX(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 10000; pointer-events: none;
+        }
+        .toast.active { transform: translateX(0); opacity: 1; }
+        .toast i { font-size: 1.5rem; color: var(--color-primary); }
+        .toast-content h4 { color: #fff; font-size: 1rem; margin-bottom: 2px; }
+        .toast-content p { color: #888; font-size: 0.8rem; }
+
+        /* Animations */
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            #app-root { grid-template-columns: 1fr; }
+            .sidebar { display: none; } /* Mobile Menu would be added here in V9 */
+            .top-navbar { padding: 0 20px; height: 70px; }
+            .content-scroll { padding: 20px; }
+            .auth-card { padding: 30px 20px; }
+        }
+        @media (max-width: 600px) {
+            .games-grid { grid-template-columns: 1fr; }
+            .card-img-wrap { height: 140px; }
+            .detail-title { font-size: 1.8rem; }
+            .script-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .btn-copy { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="security-overlay">
+        <div class="auth-card">
+            <div class="auth-icon-box">
+                <i class="fas fa-fingerprint"></i>
+            </div>
+            <h1 class="auth-title">System Locked</h1>
+            <p class="auth-subtitle">Database protegida por Hardware ID Único.</p>
+
+            <div class="hwid-container" onclick="copyHWID()">
+                <span class="hwid-label">SEU ID DE DISPOSITIVO:</span>
+                <div class="hwid-value" id="device-id-display">LOADING...</div>
+                <div style="font-size:0.75rem; color:#555; margin-top:6px;">(Toque para copiar e envie ao admin)</div>
+            </div>
+
+            <div class="auth-input-group">
+                <input type="text" id="license-key" class="auth-input" placeholder="COLE SUA KEY AQUI" autocomplete="off">
+            </div>
+
+            <button class="btn-unlock" onclick="validateLicense()">
+                <i class="fas fa-unlock-alt" style="margin-right:8px;"></i> Desbloquear Acesso
+            </button>
+
+            <div id="auth-message" class="status-message"></div>
+
+            <a href="https://wa.me/55SEUNUMERO?text=Quero+comprar+uma+Key+UnderDog+V8" target="_blank" class="buy-link">
+                <i class="fab fa-whatsapp"></i> Adquirir Licença (R$ 1,00)
+            </a>
+        </div>
+    </div>
+
+    <div id="app-root">
+        
+        <aside class="sidebar">
+            <div class="brand-header">
+                <i class="fas fa-shield-cat brand-logo"></i>
+                <span class="brand-text">UnderDog V8</span>
+            </div>
+
+            <ul class="nav-menu" id="side-nav">
+                <li class="nav-item active" onclick="navigateHome()">
+                    <i class="fas fa-th-large"></i> Dashboard
+                </li>
+            </ul>
+
+            <div class="user-panel">
+                <div class="user-avatar">V</div>
+                <div class="user-info">
+                    <h4>Victor (Admin)</h4>
+                    <div class="user-tag">LIFETIME ACCESS</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-pane">
+            <header class="top-navbar">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="global-search" class="search-input" placeholder="Pesquisar entre os 300+ scripts...">
+                </div>
+            </header>
+
+            <div class="content-scroll">
+                
+                <div id="view-dashboard">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-database" style="color:var(--color-primary)"></i> Database Completa
+                        </h2>
+                        <span class="badge-count" id="games-count">0 Jogos</span>
+                    </div>
+                    
+                    <div class="games-grid" id="games-grid">
+                        </div>
+                </div>
+
+                <div id="view-detail">
+                    </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <div class="toast-content">
+            <h4>Sucesso!</h4>
+            <p>Script copiado para a área de transferência.</p>
+        </div>
+    </div>
+
+    <script>
+        /* ========================================================
+         1. SECURITY LOGIC (HARDWARE ID)
+         ========================================================
+         */
+        const SALT_KEY = "UNDERDOG_V8_ULTIMATE_SECRET"; 
+        let userHWID = localStorage.getItem('ud_v8_hwid');
+
+        // Generate ID
+        if (!userHWID) {
+            userHWID = 'UD-' + Math.random().toString(36).substring(2, 6).toUpperCase() + 
+                       '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+            localStorage.setItem('ud_v8_hwid', userHWID);
+        }
+        document.getElementById('device-id-display').innerText = userHWID;
+
+        function copyHWID() {
+            navigator.clipboard.writeText(userHWID);
+            showToast();
+        }
+
+        function validateLicense() {
+            const input = document.getElementById('license-key').value.trim();
+            const msg = document.getElementById('auth-message');
+            const expected = btoa(userHWID + SALT_KEY); // Base64 Encode
+
+            if (input === expected) {
+                msg.innerHTML = "<span class='text-success'><i class='fas fa-check'></i> KEY ACEITA! INICIANDO...</span>";
+                localStorage.setItem('ud_v8_unlocked', 'true');
+                setTimeout(() => {
+                    document.getElementById('security-overlay').style.display = 'none';
+                    document.getElementById('app-root').style.display = 'grid';
+                    document.getElementById('app-root').style.opacity = '1';
+                    initApp();
+                }, 1000);
+            } else {
+                msg.innerHTML = "<span class='text-error'><i class='fas fa-times'></i> KEY INVÁLIDA.</span>";
+            }
+        }
+
+        // Auto-Login
+        if (localStorage.getItem('ud_v8_unlocked') === 'true') {
+            document.getElementById('security-overlay').style.display = 'none';
+            document.getElementById('app-root').style.display = 'grid';
+            document.getElementById('app-root').style.opacity = '1';
+            window.onload = initApp;
+        }
+
+        /* ========================================================
+         2. MASSIVE DATABASE (ALL GAMES + EXPANSION)
+         ========================================================
+         */
+        const gamesDB = [
+            {
+                id: "blox-fruits", title: "Blox Fruits", image: "https://tr.rbxcdn.com/c628f3226a09289746e5564850779d7d/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub (Main)", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/RedzHub/BloxFruits/main/Source.luau"))()`},
+                    {n: "HoHo Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/hoohman1/HoHo_H/main/Loading_UI"))()`},
+                    {n: "Speed Hub X", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()`},
+                    {n: "Control Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Control-Blox-Fruits/main/Control.lua"))()`},
+                    {n: "Teddy Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/TeddyHubx/BloxFruits/main/Teddy.lua"))()`},
+                    {n: "OK Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/OKHubOfficial/OKHub/main/OKHub.lua"))()`},
+                    {n: "Banana Cat", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/BananaCatHub/BananaCat/main/BananaCat.lua"))()`},
+                    {n: "Min Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Min/MinHub/main/MinHub.lua"))()`},
+                    {n: "Zen Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/zen-hub/zen/main/zenhub.lua"))()`},
+                    {n: "Xeter Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ahmadsgamer2/Script--Game/main/Script Game"))()`}
+                ]
+            },
+            {
+                id: "bedwars", title: "BedWars", image: "https://tr.rbxcdn.com/39a26365451296c096c44936ce85c13b/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "Ez Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzHub/BedWars/main/Ez.lua"))()`},
+                    {n: "Vortex Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/VortexHub/BedWars/main/Vortex.lua"))()`},
+                    {n: "Control Bed", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ControlBed/main/Control.lua"))()`},
+                    {n: "OP 2026", c: `loadstring(game:HttpGet("https://github.com/raw/bedwars-op-2026/main/script.lua"))()`},
+                    {n: "Infinite Fly", c: `loadstring(game:HttpGet("https://pastebin.com/raw/bedwars-fly"))()`},
+                    {n: "Epilogue", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/bedwars-epilogue"))()`}
+                ]
+            },
+            {
+                id: "pls-donate", title: "PLS DONATE", image: "https://tr.rbxcdn.com/911075726219488a76043b7e732389d4/768/432/Image/Png", scripts: [
+                    {n: "Redz Collect", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Donate Mgr", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Stefanuk12/ROBLOX/master/Games/PLS%20DONATE/Example.lua"))()`},
+                    {n: "Infinite Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "Magma AFK", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Redz Style", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/PLSDonate/main/source.lua"))()`},
+                    {n: "Dupe Stands", c: `loadstring(game:HttpGet("https://pastebin.com/raw/pls-dupe-2026"))()`},
+                    {n: "Inf Robux", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/pls-infinite"))()`},
+                    {n: "Auto Win", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/retpirato/Roblox-Scripts/master/PLS%20Donate.lua"))()`},
+                    {n: "Auto Claim", c: `loadstring(game:HttpGet("https://github.com/raw/pls-donate-auto/main/script.lua"))()`}
+                ]
+            },
+            {
+                id: "sols-rng", title: "Sol's RNG", image: "https://tr.rbxcdn.com/264a97405e3a89078f458645a271701b/768/432/Image/Png", scripts: [
+                    {n: "Redz RNG", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Official Auto", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/solsrng-dev/SolsRNGScript/main/source.lua"))()`},
+                    {n: "Best PC/Mob", c: `loadstring(game:HttpGet("https://cheater.fun/raw/sols-rng-pc-mobile"))()`},
+                    {n: "Auto Skip", c: `loadstring(game:HttpGet("https://arceusx.com/raw/sols-rng-2026.lua"))()`},
+                    {n: "Luck Potions", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ahmedmode/sols/main/sols.lua"))()`},
+                    {n: "Quick Roll", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/sols-christmas"))()`},
+                    {n: "Redz Variant", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/SolsRNG/main/Source.lua"))()`},
+                    {n: "Magma Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Magma-Hub/sols/main/main.lua"))()`},
+                    {n: "Auto Farm", c: `loadstring(game:HttpGet("https://pastee.dev/raw/2pDfmvFe"))()`},
+                    {n: "GitHub Auto", c: `loadstring(game:HttpGet("https://github.com/raw/solsrng-dev/main/auto-farm.lua"))()`}
+                ]
+            },
+            {
+                id: "fisch", title: "Fisch", image: "https://tr.rbxcdn.com/c40590a35b71948303e2266850239077/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/RedzHub/Fisch/main/Fisch.lua"))()`},
+                    {n: "Speed Hub X", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SpeedHubX/Speed/main/SpeedHubX.lua"))()`},
+                    {n: "Fisch OP", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/FischHubBest/main/FischOP.lua"))()`},
+                    {n: "Auto Fish God", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AutoFishGod/main/AutoFish.lua"))()`},
+                    {n: "Thunder Z", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ThunderZ/Hub/main/Fisch.lua"))()`},
+                    {n: "Keyless Fisch", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/KeylessFisch/main/Source.lua"))()`},
+                    {n: "Mobile Opt", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/MobileFisch/main/Mobile.lua"))()`},
+                    {n: "Fluxus Best", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/FluxusBest/Fisch/main/AutoFarm"))()`},
+                    {n: "Control Fisch", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ControlFisch/main/Control.lua"))()`},
+                    {n: "Redz AutoSell", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/RedzHub/main/FischAutoSell.lua"))()`}
+                ]
+            },
+            {
+                id: "mm2", title: "Murder Mystery 2", image: "https://tr.rbxcdn.com/97881e194c65e236378ba6f78df31102/768/432/Image/Png", scripts: [
+                    {n: "Redz MM2", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Vertex Auto", c: `loadstring(game:HttpGet("https://xenoscripts.com/raw/vertex-mm2"))()`},
+                    {n: "Parvus Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Solvex GUI", c: `loadstring(game:HttpGet("https://xenoscripts.com/raw/solvex-mm2-gui"))()`},
+                    {n: "UTG God", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Magma ESP", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "Coin Farm", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/retpirato/Roblox-Scripts/master/MM2.lua"))()`},
+                    {n: "Xmas Farm", c: `loadstring(game:HttpGet("https://pastebin.com/raw/mm2-2026-christmas"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/MM2/main/source.lua"))()`},
+                    {n: "Overdrive", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/mm2-overdrive"))()`}
+                ]
+            },
+            {
+                id: "brookhaven", title: "Brookhaven RP", image: "https://tr.rbxcdn.com/97881e194c65e236378ba6f78df31102/768/432/Image/Png", scripts: [
+                    {n: "Redz RP", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Infinite Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Magma RP", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "RetPirato", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/retpirato/Roblox-Scripts/master/Brookhaven.lua"))()`},
+                    {n: "Fly Script", c: `loadstring(game:HttpGet("https://pastebin.com/raw/brookhaven-fly"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/Brookhaven/main/source.lua"))()`},
+                    {n: "God Mode", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/brookhaven-god"))()`},
+                    {n: "Universal", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/UniversalScript/Brook/main/Brookhaven.lua"))()`}
+                ]
+            },
+            {
+                id: "adopt-me", title: "Adopt Me!", image: "https://tr.rbxcdn.com/1d0a5223595460592f6b86df442533ca/768/432/Image/Png", scripts: [
+                    {n: "Redz Adopt", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Speed Hub X", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "RetPirato", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/retpirato/Roblox-Scripts/master/Adopt%20Me.lua"))()`},
+                    {n: "Bucks Farm", c: `loadstring(game:HttpGet("https://pastebin.com/raw/adoptme-bucks"))()`},
+                    {n: "Neon Auto", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/adoptme-neon"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/AdoptMe/main/source.lua"))()`},
+                    {n: "Keyless", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/KeylessAdopt/main/Adopt.lua"))()`}
+                ]
+            },
+            {
+                id: "dandys-world", title: "Dandy's World", image: "https://tr.rbxcdn.com/074bd7c88802d30057416a1e9e11fd/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Inf Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "Ichor Farm", c: `loadstring(game:HttpGet("https://pastebin.com/raw/dandysworld-ichor"))()`},
+                    {n: "Auto Dandy", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/dandys-auto"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/Dandys/main/source.lua"))()`},
+                    {n: "Ez Dandys", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzDandys/main/Ez.lua"))()`},
+                    {n: "Dandy 2026", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/DandyHub2026/main/Dandy.lua"))()`}
+                ]
+            },
+            {
+                id: "jujutsu-infinite", title: "Jujutsu Infinite", image: "https://tr.rbxcdn.com/c3580005577f0e5d69d4c5b0f0b08c/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Inf Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "Pastebin", c: `loadstring(game:HttpGet("https://pastebin.com/raw/jujutsu-infinite"))()`},
+                    {n: "Auto Farm", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/jujutsu-farm"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/Jujutsu/main/source.lua"))()`},
+                    {n: "Jujutsu Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/JujutsuHub/main/Jujutsu.lua"))()`},
+                    {n: "Ez Jujutsu", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzJujutsu/main/Ez.lua"))()`}
+                ]
+            },
+            {
+                id: "evade", title: "Evade", image: "https://tr.rbxcdn.com/05577fc88802d30057416a1ef0b08c/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Inf Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "Nextbot ESP", c: `loadstring(game:HttpGet("https://pastebin.com/raw/evade-nextbot"))()`},
+                    {n: "Auto Evade", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/evade-auto"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/Evade/main/source.lua"))()`},
+                    {n: "Ez Evade", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzEvade/main/Ez.lua"))()`},
+                    {n: "Evade 2026", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EvadeHub2026/main/Evade.lua"))()`}
+                ]
+            },
+            {
+                id: "tower-of-hell", title: "Tower of Hell", image: "https://tr.rbxcdn.com/f0b08c9e11fd23a5f6cc945e38e9bd/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Inf Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "Skip Tower", c: `loadstring(game:HttpGet("https://pastebin.com/raw/towerofhell-skip"))()`},
+                    {n: "Auto Farm", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/tower-auto"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/Tower/main/source.lua"))()`},
+                    {n: "Ez Tower", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzTower/main/Ez.lua"))()`},
+                    {n: "Tower Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/TowerHub/main/Tower.lua"))()`}
+                ]
+            },
+            /* === EXISTING GAMES PRESERVED === */
+            {
+                id: "grow-garden", title: "Grow A Garden", image: "https://tr.rbxcdn.com/5f8d9f45d8b8a6a6e8b8a6a6e8b8a6a6/768/432/Image/Png", scripts: [
+                    {n: "Visual Script", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/veryimportantrr/x/refs/heads/main/gag_visual.lua", true))("discord.gg/csxu2nCkw9")`},
+                    {n: "Zusume Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ZusumeHub/ZusumeHub/refs/heads/main/UpdateZysume"))()`},
+                    {n: "Auto Farm", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/depthso/Grow-a-Garden/refs/heads/main/autofarm.lua"))()`},
+                    {n: "Pastefy Script", c: `loadstring(game:HttpGet("https://pastefy.app/OAYZO6GR/raw"))()`},
+                    {n: "Vexze Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Vexze/VexzeHub/main/Vexze.lua"))()`},
+                    {n: "Rift Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/RiftHub/Rift/main/RiftHub.lua"))()`},
+                    {n: "Speed Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SpeedHubX/TheForge/main/Speed.lua"))()`},
+                    {n: "Hydra Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/HydraForge/main/Hydra.lua"))()`},
+                    {n: "Thunder", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ThunderForge/main/Thunder.lua"))()`},
+                    {n: "Ez Forge", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzForge/main/Ez.lua"))()`}
+                ]
+            },
+            {
+                id: "nights-forest", title: "99 Nights in Forest", image: "https://tr.rbxcdn.com/074bd7c88802d30057416a1e9e11fd/768/432/Image/Png", scripts: [
+                    {n: "VWExtra", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VWExtra/main/NightsInTheForest.lua", true))()`},
+                    {n: "VW Add", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", true))()`},
+                    {n: "H4x Loader", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua", true))()`},
+                    {n: "Foxname", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/caomod2077/Script/refs/heads/main/FoxnameHub.lua"))()`},
+                    {n: "Luarmor", c: `loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/178c353fa8240cbf61835f4c6f76112e.lua"))()`},
+                    {n: "CpsHub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Rx1m/CpsHub/refs/heads/main/Hub",true))()`},
+                    {n: "PhantomFlux", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/sudaisontopxd/PhantomFlux/refs/heads/main/99NightsInTheForest", true))()`},
+                    {n: "Hutao Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SLK-gaming/Hutao-Hub/refs/heads/main/99-Nights-In-The-Forest.txt", true))()`},
+                    {n: "Adib Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/adibhub1/99-nighit-in-forest/refs/heads/main/99%20night%20in%20forest", true))()`},
+                    {n: "Kenniel Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Kenniel123/99-Nights-in-the-Forest/refs/heads/main/99%20Nights%20in%20the%20Forest"))()`}
+                ]
+            },
+            {
+                id: "arsenal", title: "Arsenal", image: "https://tr.rbxcdn.com/f0426c11739c381c15f11559c3a3848b/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Inf Ammo", c: `loadstring(game:HttpGet("http://pastebin.com/raw/9ArrNC4L"))()`},
+                    {n: "Hitbox Mod", c: `loadstring(game:HttpGet('https://raw.githubusercontent.com/WinzeTim/timmyhack2/refs/heads/main/arsenal.lua'))()`},
+                    {n: "Aimbot", c: `loadstring(game:HttpGet("https://pastebin.com/raw/Hbnb70Hn"))()`},
+                    {n: "Mobile Farm", c: `loadstring(game:HttpGet("https://pastebin.com/raw/14xXHZQW"))()`},
+                    {n: "LTHub", c: `loadstring(game:HttpGet("http://bin.shortbin.eu:8080/raw/XBkUJpZcPi", true))()`},
+                    {n: "NoClip", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Vcsk/RobloxScripts/main/HitboxExpander.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "UTG ESP", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`}
+                ]
+            },
+            {
+                id: "blade-ball", title: "Blade Ball", image: "https://tr.rbxcdn.com/139045b630e66a70716c52a0d924765d/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Blaze Best", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/BlazeBest/BladeBall/main/Blade.lua"))()`},
+                    {n: "Speed Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SpeedHubX/BladeBall/main/Speed.lua"))()`},
+                    {n: "Hoho Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/HohoHub/BladeBall/main/Loading"))()`},
+                    {n: "Parry God", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ParryGod/main/Parry.lua"))()`},
+                    {n: "Auto Parry", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AutoParryBest/main/AutoParry"))()`},
+                    {n: "Vortex", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/VortexHub/BladeBall/main/Vortex"))()`},
+                    {n: "Keyless", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/KeylessBlade/main/Source"))()`},
+                    {n: "Ez Blade", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzHub/Blade/main/EzBladeBall.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`}
+                ]
+            },
+            {
+                id: "king-legacy", title: "King Legacy", image: "https://tr.rbxcdn.com/15949d885a1532f8b55681c3b1745778/768/432/Image/Png", scripts: [
+                    {n: "Fazium", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ZaRdoOx/Fazium-files/main/Loader"))()`},
+                    {n: "Tsuo Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/king%20legacy"))()`},
+                    {n: "Hyper Hub", c: `repeat wait() until game:IsLoaded() loadstring(game:HttpGet("https://raw.githubusercontent.com/DookDekDEE/Hyper/main/script.lua"))()`},
+                    {n: "Arc Hub", c: `getgenv().CustomDistance = 10 loadstring(game:HttpGet("https://raw.githubusercontent.com/ChopLoris/ArcHub/main/main.lua"))()`},
+                    {n: "Zee Hub", c: `loadstring(game:HttpGet('https://zuwz.me/Ls-Zee-Hub-KL'))()`},
+                    {n: "Hulk Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/HULKUexe/mobileX/main/FreeScript.lua"))()`},
+                    {n: "ShareHack", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SHAREHACK/script/main/kl"))()`},
+                    {n: "LHking", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/LHking123456/TVFRPp5brCJ2Z/refs/heads/main/Legacy"))()`},
+                    {n: "Zen Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Zenhubtop/zen_hub_pr/main/zennewwwwui.lua", true))()`},
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`}
+                ]
+            },
+            {
+                id: "anime-endless", title: "Anime Fighting Sim", image: "https://tr.rbxcdn.com/985ff7cce9d423a5f6cc945e38e9bd/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Parvus", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AlexR32/Parvus/main/loader.lua"))()`},
+                    {n: "Magma", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Commandcracker/Magma-Hub/main/main.lua"))()`},
+                    {n: "UTG V4", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Blukezz/UTG-V4/main/Script.lua"))()`},
+                    {n: "Inf Yield", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()`},
+                    {n: "Pastebin", c: `loadstring(game:HttpGet("https://pastebin.com/raw/afse-endless"))()`},
+                    {n: "Scriptblox", c: `loadstring(game:HttpGet("https://scriptblox.com/raw/afse-auto"))()`},
+                    {n: "Seraph Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SeraphHub/AFSE/main/source.lua"))()`},
+                    {n: "Redz Var", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/realredz/AFSE/main/source.lua"))()`},
+                    {n: "Ez AFSE", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/EzAFSE/main/Ez.lua"))()`}
+                ]
+            },
+            {
+                id: "da-hood", title: "Da Hood", image: "https://tr.rbxcdn.com/9c0b768c8b0303e9389270e230722384/768/432/Image/Png", scripts: [
+                    {n: "SwagMode", c: `loadstring(game:HttpGet('https://raw.githubusercontent.com/lerkermer/lua-projects/master/SwagModeV002'))()`},
+                    {n: "Faded", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/NighterEpic/Faded/main/YesEpic", true))()`},
+                    {n: "SpaceX", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SpaceX-v1/Script/main/Loader.lua"))()`},
+                    {n: "Nuker", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/scripter123/DaHood/main/Nuker"))()`},
+                    {n: "Azure Modded", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Actyrn/Scripts/main/AzureModded"))()`},
+                    {n: "AimLock", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Totoco/DaHood/main/AimLock.lua"))()`},
+                    {n: "Money Farm", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/DaHood/main/MoneyFarm"))()`},
+                    {n: "Silent Aim", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/taylor/DaHood/main/SilentAim"))()`},
+                    {n: "God Mode", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Zesty/DaHood/main/GodMode"))()`},
+                    {n: "Fly", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Xneoff/DaHood/main/Fly.lua"))()`}
+                ]
+            },
+            {
+                id: "slap-battles", title: "Slap Battles", image: "https://tr.rbxcdn.com/7b2e3e5b3b0a7b0a7b0a7b0a7b0a7b0a/768/432/Image/Png", scripts: [
+                    {n: "R2O", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Cheaterboy2000/R2O/main/SlapBattles"))()`},
+                    {n: "Slap Farm", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/dreadztv/SlapBattles/main/Farm.lua"))()`},
+                    {n: "Glove ESP", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/SlapBattles/main/ESP.lua"))()`},
+                    {n: "Anti Void", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/NoobMaster69/SlapBattles/main/AntiVoid.lua"))()`},
+                    {n: "Auto Win", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/scriptpastebin/SlapBattles/main/AutoWin.lua"))()`},
+                    {n: "Troll GUI", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollHub/SlapBattles/main/GUI.lua"))()`},
+                    {n: "Infinite Slaps", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Hacker123/SlapBattles/main/InfSlaps.lua"))()`},
+                    {n: "Kill Aura", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkNet/SlapBattles/main/KillAura.lua"))()`},
+                    {n: "Speed Run", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/SpeedRunner/SlapBattles/main/Speed.lua"))()`},
+                    {n: "Badge Farm", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Badger/SlapBattles/main/Badges.lua"))()`}
+                ]
+            },
+            /* === EXPANDED GAMES AREA (NEW) === */
+            {
+                id: "pet-sim-99", title: "Pet Simulator 99", image: "https://tr.rbxcdn.com/264a97405e3a89078f458645a271701b/768/432/Image/Png", scripts: [
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Zap Hub", c: `loadstring(game:HttpGet('https://raw.githubusercontent.com/ZapHub/Zap/main/Work.lua'))()`},
+                    {n: "Speed Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua"))()`},
+                    {n: "Auto Farm Gems", c: `loadstring(game:HttpGet("https://pastebin.com/raw/petsim99-gems"))()`},
+                    {n: "Trade Scam", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/TrollScript/PetSim/main/Trade.lua"))()`},
+                    {n: "Shiny Relic", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/RelicHunter/Pet99/main/Source.lua"))()`}
+                ]
+            },
+            {
+                id: "doors", title: "DOORS", image: "https://tr.rbxcdn.com/5d904764831f247926715d3246343515/768/432/Image/Png", scripts: [
+                    {n: "Black King", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/KINGHUB01/BlackKing-obf/main/Doors%20Blackking%20And%20Bobo"))()`},
+                    {n: "MSDOORS", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/mspaint-v2/main/Doors.lua"))()`},
+                    {n: "FFJ Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ-Hub/Doors/main/Source.lua"))()`},
+                    {n: "Entity ESP", c: `loadstring(game:HttpGet("https://pastebin.com/raw/doors-esp-2026"))()`},
+                    {n: "Auto Walk", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AutoWalk/Doors/main/Main.lua"))()`}
+                ]
+            },
+            {
+                id: "rivals", title: "RIVALS", image: "https://tr.rbxcdn.com/139045b630e66a70716c52a0d924765d/768/432/Image/Png", scripts: [
+                    {n: "Thunder Client", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/ThunderClient/Rivals/main/Source.lua"))()`},
+                    {n: "Redz Hub", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/huy384/redzHub/refs/heads/main/redzHub.lua"))()`},
+                    {n: "Silent Aim", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/AimbotGod/Rivals/main/Silent.lua"))()`},
+                    {n: "ESP Only", c: `loadstring(game:HttpGet("https://pastebin.com/raw/rivals-esp"))()`},
+                    {n: "Azure Rivals", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Actyrn/Scripts/main/AzureRivals"))()`}
+                ]
+            },
+            {
+                id: "natural-disaster", title: "Natural Disaster", image: "https://tr.rbxcdn.com/c628f3226a09289746e5564850779d7d/768/432/Image/Png", scripts: [
+                    {n: "Auto Farm Wins", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/2d/survive/main/autofarm.lua"))()`},
+                    {n: "Island ESP", c: `loadstring(game:HttpGet("https://pastebin.com/raw/nds-esp"))()`},
+                    {n: "Balloon God", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/Balloon/NDS/main/God.lua"))()`}
+                ]
+            },
+            {
+                id: "muscle-legends", title: "Muscle Legends", image: "https://tr.rbxcdn.com/985ff7cce9d423a5f6cc945e38e9bd/768/432/Image/Png", scripts: [
+                    {n: "Auto Strength", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/MuscleHub/Legends/main/AutoFarm.lua"))()`},
+                    {n: "Speed Glitch", c: `loadstring(game:HttpGet("https://pastebin.com/raw/muscle-speed"))()`},
+                    {n: "Rebirth Auto", c: `loadstring(game:HttpGet("https://raw.githubusercontent.com/RebirthGod/Muscle/main/Source.lua"))()`}
+                ]
+            }
+        ];
+
+        /* --- 3. UI LOGIC --- */
+        function initApp() {
+            const count = document.getElementById('games-count');
+            if(count) count.innerText = `${gamesDB.length} Jogos`;
+            renderGrid(gamesDB);
+            renderSidebar(gamesDB);
+        }
+
+        const gridContainer = document.getElementById('games-grid');
+        const sideNav = document.getElementById('side-nav');
+        const dashView = document.getElementById('view-dashboard');
+        const detView = document.getElementById('view-detail');
+
+        function renderGrid(data) {
+            gridContainer.innerHTML = '';
+            data.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.onclick = () => openDetail(game);
+                
+                card.innerHTML = `
+                    <div class="card-img-wrap">
+                        <img src="${game.image}" class="card-img" alt="${game.title}" onerror="this.src='https://placehold.co/400x200?text=No+Image'">
+                        <div class="card-overlay"></div>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">${game.title}</h3>
+                        <div class="card-footer">
+                            <span><i class="fas fa-scroll"></i> ${game.scripts.length} Scripts</span>
+                            <span class="status-badge">WORKING</span>
+                        </div>
+                    </div>
+                `;
+                gridContainer.appendChild(card);
+            });
+        }
+
+        function renderSidebar(data) {
+            const staticLink = sideNav.firstElementChild;
+            sideNav.innerHTML = '';
+            sideNav.appendChild(staticLink);
+
+            data.forEach(game => {
+                const li = document.createElement('li');
+                li.className = 'nav-item';
+                li.innerHTML = `<i class="fas fa-gamepad"></i> ${game.title}`;
+                li.onclick = () => openDetail(game);
+                sideNav.appendChild(li);
+            });
+        }
+
+        function openDetail(game) {
+            dashView.style.display = 'none';
+            detView.style.display = 'block';
+            window.scrollTo(0,0);
+
+            let scriptsHTML = '';
+            game.scripts.forEach((s, idx) => {
+                scriptsHTML += `
+                    <div class="script-container">
+                        <div class="script-header">
+                            <div class="script-title">
+                                <span class="index-badge">#${idx+1}</span> ${s.n}
+                            </div>
+                            <button class="btn-copy" onclick="copyCode(this, '${escapeJS(s.c)}')">
+                                <i class="fas fa-copy"></i> COPIAR
+                            </button>
+                        </div>
+                        <div class="code-block">${s.c}</div>
+                    </div>
+                `;
+            });
+
+            detView.innerHTML = `
+                <div class="detail-header">
+                    <button class="btn-back" onclick="navigateHome()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h1 class="detail-title">${game.title}</h1>
+                </div>
+                <div>${scriptsHTML}</div>
+            `;
+        }
+
+        function navigateHome() {
+            detView.style.display = 'none';
+            dashView.style.display = 'block';
+        }
+
+        document.getElementById('global-search').addEventListener('keyup', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = gamesDB.filter(g => g.title.toLowerCase().includes(term));
+            
+            if(term.length > 0) navigateHome();
+            renderGrid(filtered);
+        });
+
+        /* --- 4. UTILS --- */
+        function escapeJS(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function copyCode(btn, code) {
+            const raw = code.replace(/&quot;/g, '"');
+            navigator.clipboard.writeText(raw).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('active');
+                
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="fas fa-check"></i> COPIADO`;
+                btn.style.background = "#fff";
+                btn.style.color = "#000";
+                
+                setTimeout(() => {
+                    toast.classList.remove('active');
+                    btn.innerHTML = `<i class="fas fa-copy"></i> COPIAR`;
+                    btn.style.background = "var(--color-primary)";
+                    btn.style.color = "#000";
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
